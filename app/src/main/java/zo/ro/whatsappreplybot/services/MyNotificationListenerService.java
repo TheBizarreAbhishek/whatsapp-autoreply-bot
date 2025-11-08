@@ -53,6 +53,39 @@ public class MyNotificationListenerService extends NotificationListenerService {
                 return;
             }
 
+            // Skip if message is from the user themselves
+            if (isMessageFromUser(text)) {
+                Log.d(TAG, "Skipping reply: Message is from user");
+                return;
+            }
+
+            // Skip if notification is for an active/foreground chat
+            if (isChatActive(statusBarNotification)) {
+                Log.d(TAG, "Skipping reply: Chat is currently active");
+                return;
+            }
+
+            // Check if notification has reply action - if not, we can't reply anyway
+            Notification.Action[] actions = statusBarNotification.getNotification().actions;
+            if (actions == null || actions.length == 0) {
+                Log.d(TAG, "Skipping reply: No reply actions available");
+                return;
+            }
+
+            // Check if any action has remote input (reply capability)
+            boolean hasReplyAction = false;
+            for (Notification.Action action : actions) {
+                if (action.getRemoteInputs() != null && action.getRemoteInputs().length > 0) {
+                    hasReplyAction = true;
+                    break;
+                }
+            }
+            
+            if (!hasReplyAction) {
+                Log.d(TAG, "Skipping reply: No reply action found in notification");
+                return;
+            }
+
             // Add this message to the set of responded messages to avoid looping
             respondedMessages.add(messageId);
 
@@ -119,8 +152,7 @@ public class MyNotificationListenerService extends NotificationListenerService {
                                 botReplyMessage = replyPrefix + " " + reply;
                                 String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
                                 messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);
-                                sendWithNaturalDelay(action, botReplyMessage);
-                                new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 750);
+                                sendWithNaturalDelay(action, botReplyMessage, messageId);
                             });
 
                         } else if (llmModel.startsWith("custom")) {
@@ -131,8 +163,7 @@ public class MyNotificationListenerService extends NotificationListenerService {
                                 botReplyMessage = replyPrefix + " " + reply;
                                 String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
                                 messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);
-                                sendWithNaturalDelay(action, botReplyMessage);
-                                new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 750);
+                                sendWithNaturalDelay(action, botReplyMessage, messageId);
                             });
 
                         } else if (llmModel.startsWith("gemini")) {
@@ -143,8 +174,7 @@ public class MyNotificationListenerService extends NotificationListenerService {
                                 botReplyMessage = replyPrefix + " " + reply;
                                 String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
                                 messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);
-                                sendWithNaturalDelay(action, botReplyMessage);
-                                new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 750);
+                                sendWithNaturalDelay(action, botReplyMessage, messageId);
                             });
 
                         } else if (llmModel.startsWith("deepseek")) {
@@ -155,8 +185,7 @@ public class MyNotificationListenerService extends NotificationListenerService {
                                 botReplyMessage = replyPrefix + " " + reply;
                                 String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
                                 messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);
-                                sendWithNaturalDelay(action, botReplyMessage);
-                                new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 750);
+                                sendWithNaturalDelay(action, botReplyMessage, messageId);
                             });
                         }
 
@@ -164,8 +193,7 @@ public class MyNotificationListenerService extends NotificationListenerService {
                         botReplyMessage = (replyPrefix + " " + sharedPreferences.getString("default_reply_message", getString(R.string.default_bot_message))).trim();
                         String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
                         messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);
-                        sendWithNaturalDelay(action, botReplyMessage);
-                        new Handler().postDelayed(() -> respondedMessages.remove(messageId), 750);
+                        sendWithNaturalDelay(action, botReplyMessage, messageId);
                     }
 
                     //..............................................................................
@@ -234,18 +262,23 @@ public class MyNotificationListenerService extends NotificationListenerService {
 
     /**
      * Sends reply with natural delay based on text length (if enabled)
+     * Removes messageId from respondedMessages after sending to prevent duplicates
      */
-    private void sendWithNaturalDelay(Notification.Action action, String botReplyMessage) {
+    private void sendWithNaturalDelay(Notification.Action action, String botReplyMessage, String messageId) {
         boolean isNaturalDelayEnabled = sharedPreferences.getBoolean("is_natural_delay_enabled", true);
         
         if (isNaturalDelayEnabled) {
             long delay = calculateNaturalDelay(botReplyMessage);
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 send(action, botReplyMessage);
+                // Remove messageId after sending (wait additional 2 seconds to prevent duplicates from notification updates)
+                new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 2000);
             }, delay);
         } else {
             // Send instantly if natural delay is disabled
             send(action, botReplyMessage);
+            // Remove messageId after a short delay to prevent immediate duplicates
+            new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 2000);
         }
     }
 
@@ -287,6 +320,77 @@ public class MyNotificationListenerService extends NotificationListenerService {
 
     private boolean isGroupMessage(String title) {
         return title != null && title.contains(":");
+    }
+
+//    ----------------------------------------------------------------------------------------------
+
+    /**
+     * Checks if the chat is currently active/foreground
+     * When WhatsApp chat is open, notifications might still be posted but shouldn't trigger auto-reply
+     */
+    private boolean isChatActive(StatusBarNotification statusBarNotification) {
+        Notification notification = statusBarNotification.getNotification();
+        
+        if (notification != null) {
+            Bundle extras = notification.extras;
+            if (extras != null) {
+                CharSequence text = extras.getCharSequence(Notification.EXTRA_TEXT);
+                String title = extras.getString(Notification.EXTRA_TITLE);
+                
+                // If title and text are the same, it might be a status update or system message
+                if (title != null && text != null && title.equals(text.toString())) {
+                    return true;
+                }
+                
+                // Check if notification is silent (no sound/vibration) - might indicate active chat
+                // When chat is open, WhatsApp might post silent notifications
+                if ((notification.flags & Notification.FLAG_ONLY_ALERT_ONCE) != 0) {
+                    // This flag is set when notification should only alert once
+                    // Combined with other checks, this might indicate active chat
+                }
+            }
+            
+            // Check if notification is marked as ongoing (less likely to be a new message)
+            if ((notification.flags & Notification.FLAG_ONGOING_EVENT) != 0) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+//    ----------------------------------------------------------------------------------------------
+
+    /**
+     * Checks if the message is from the user themselves
+     * WhatsApp notifications for user's own messages often have specific patterns
+     */
+    private boolean isMessageFromUser(CharSequence text) {
+        if (text == null || text.toString().isEmpty()) {
+            return false;
+        }
+        
+        String messageText = text.toString().toLowerCase();
+        
+        // Check for common patterns indicating user's own messages
+        // WhatsApp might show "You:" prefix or similar indicators
+        if (messageText.startsWith("you:") || 
+            messageText.startsWith("you ") ||
+            messageText.contains("you sent") ||
+            messageText.contains("your message")) {
+            return true;
+        }
+        
+        // Also check for status update patterns
+        if (messageText.contains("read") || 
+            messageText.contains("delivered") ||
+            messageText.contains("typing...") ||
+            messageText.contains("online") ||
+            messageText.contains("last seen")) {
+            return true;
+        }
+        
+        return false;
     }
 
 //    ----------------------------------------------------------------------------------------------
