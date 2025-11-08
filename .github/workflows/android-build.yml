@@ -28,26 +28,24 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+          .gradle
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
 
     - name: Build Release APK
-      run: ./gradlew assembleRelease
-      continue-on-error: true
-
-    - name: Upload Debug APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
-        retention-days: 30
+      run: ./gradlew assembleRelease --no-daemon
 
     - name: Upload Release APK
       uses: actions/upload-artifact@v4
-      if: success() || failure()
       with:
         name: app-release
         path: app/build/outputs/apk/release/app-release.apk
         retention-days: 30
-        if-no-files-found: ignore
 
