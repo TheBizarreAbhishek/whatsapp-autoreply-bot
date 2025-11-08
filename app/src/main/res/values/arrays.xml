@@ -7,6 +7,9 @@
         <item>GPT 4o Mini</item>
         <item>Gemini 1.5 Flash</item>
         <item>Gemini 1.5 Pro</item>
+        <item>DeepSeek Chat</item>
+        <item>DeepSeek Coder</item>
+        <item>DeepSeek Chat V2</item>
         <item>Custom API</item>
     </string-array>
 
@@ -17,6 +20,9 @@
         <item>gpt-4o-mini</item>
         <item>gemini-1.5-flash</item>
         <item>gemini-1.5-pro</item>
+        <item>deepseek-chat</item>
+        <item>deepseek-coder</item>
+        <item>deepseek-chat-v2</item>
         <item>custom-gpt-4o</item>
     </string-array>
 
@@ -50,6 +56,16 @@
         <item>Finnish</item>
         <item>Danish</item>
         <item>Norwegian</item>
+    </string-array>
+
+    <string-array name="request_format_entries">
+        <item>Form Data</item>
+        <item>JSON</item>
+    </string-array>
+
+    <string-array name="request_format_values">
+        <item>form</item>
+        <item>json</item>
     </string-array>
 
 </resources>

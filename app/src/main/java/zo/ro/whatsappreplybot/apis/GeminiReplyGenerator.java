@@ -19,6 +19,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import zo.ro.whatsappreplybot.R;
+import zo.ro.whatsappreplybot.helpers.CustomMethods;
 import zo.ro.whatsappreplybot.helpers.WhatsAppMessageHandler;
 import zo.ro.whatsappreplybot.models.Message;
 
@@ -31,14 +32,18 @@ public class GeminiReplyGenerator {
     private final String defaultReplyMessage;
     private final String aiReplyLanguage;
     private final String botName;
+    private final String customPrompt;
+    private final Context context;
 
     public GeminiReplyGenerator(Context context, SharedPreferences sharedPreferences, WhatsAppMessageHandler whatsAppMessageHandler) {
+        this.context = context;
         this.messageHandler = whatsAppMessageHandler;
         API_KEY = sharedPreferences.getString("api_key", "not-set").trim();
         LLM_MODEL = sharedPreferences.getString("llm_model", "gemini-1.5-flash");
         defaultReplyMessage = sharedPreferences.getString("default_reply_message", context.getString(R.string.default_bot_message));
         aiReplyLanguage = sharedPreferences.getString("ai_reply_language", "English");
         botName = sharedPreferences.getString("bot_name", "Yuji");
+        customPrompt = sharedPreferences.getString("custom_ai_prompt", "").trim();
     }
 
     public void generateReply(String sender, String message, CustomReplyGenerator.OnReplyGeneratedListener listener) {
@@ -79,6 +84,15 @@ public class GeminiReplyGenerator {
 
     private @NonNull StringBuilder buildPrompt(String sender, String message, StringBuilder chatHistory) {
 
+        // Use custom prompt if provided
+        if (!customPrompt.isEmpty()) {
+            String processedPrompt = CustomMethods.processPromptTemplate(
+                customPrompt, aiReplyLanguage, botName, sender, message, chatHistory.toString()
+            );
+            return new StringBuilder(processedPrompt);
+        }
+
+        // Default behavior
         StringBuilder prompt = new StringBuilder();
 
         if (!chatHistory.toString().isEmpty()) {

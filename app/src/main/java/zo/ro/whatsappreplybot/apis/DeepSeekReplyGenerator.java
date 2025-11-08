@@ -26,10 +26,10 @@ import zo.ro.whatsappreplybot.helpers.CustomMethods;
 import zo.ro.whatsappreplybot.helpers.WhatsAppMessageHandler;
 import zo.ro.whatsappreplybot.models.Message;
 
-public class ChatGPTReplyGenerator {
+public class DeepSeekReplyGenerator {
 
     private static final String TAG = "MADARA";
-    private static final String API_URL = "https://api.openai.com/v1/chat/completions";
+    private static final String API_URL = "https://api.deepseek.com/v1/chat/completions";
     private final String API_KEY;
     private final String LLM_MODEL;
     private final WhatsAppMessageHandler messageHandler;
@@ -40,11 +40,11 @@ public class ChatGPTReplyGenerator {
     private final String botName;
     private final Context context;
 
-    public ChatGPTReplyGenerator(Context context, SharedPreferences sharedPreferences, WhatsAppMessageHandler whatsAppMessageHandler) {
+    public DeepSeekReplyGenerator(Context context, SharedPreferences sharedPreferences, WhatsAppMessageHandler whatsAppMessageHandler) {
         this.context = context;
         this.messageHandler = whatsAppMessageHandler;
         API_KEY = sharedPreferences.getString("api_key", "not-set").trim();
-        LLM_MODEL = sharedPreferences.getString("llm_model", "gpt-4o-mini");
+        LLM_MODEL = sharedPreferences.getString("llm_model", "deepseek-chat");
         defaultReplyMessage = sharedPreferences.getString("default_reply_message", context.getString(R.string.default_bot_message));
         aiReplyLanguage = sharedPreferences.getString("ai_reply_language", "English");
         botName = sharedPreferences.getString("bot_name", "Yuji");
@@ -108,7 +108,6 @@ public class ChatGPTReplyGenerator {
 
                     container.put("model", LLM_MODEL);
                     container.put("messages", httpRequestMessages);
-//                container.put("temperature", 0.7);
 
                     OkHttpClient client = new OkHttpClient.Builder()
                             .connectTimeout(30, TimeUnit.SECONDS)  // Set connect timeout
@@ -150,12 +149,12 @@ public class ChatGPTReplyGenerator {
 
                             if (body != null) {
                                 String responseData = body.string();
-                                String chatGPTReply = parseResponse(responseData);
+                                String deepSeekReply = parseResponse(responseData);
 
-                                if (chatGPTReply != null) {
-                                    listener.onReplyGenerated(chatGPTReply);
+                                if (deepSeekReply != null) {
+                                    listener.onReplyGenerated(deepSeekReply);
                                 } else {
-                                    Log.d(TAG, "onResponse: chatGPTReply is null");
+                                    Log.d(TAG, "onResponse: deepSeekReply is null");
                                     listener.onReplyGenerated(defaultReplyMessage);
                                     Log.d(TAG, "onResponse: " + responseData);
                                 }
@@ -223,3 +222,4 @@ public class ChatGPTReplyGenerator {
         void onReplyGenerated(String reply);
     }
 }
+

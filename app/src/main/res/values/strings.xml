@@ -26,4 +26,18 @@
     <string name="allow_permission">Allow Permissions</string>
     <string name="bot_settings">Bot Settings</string>
     <string name="manage_bot_settings">If you want to customize the bot, then open settings page and adjust the settings according to your desires.</string>
+    <string name="custom_api_url_title">Custom API URL</string>
+    <string name="custom_api_url_summary">Enter your custom AI API endpoint URL</string>
+    <string name="custom_api_response_key_title">Response Key</string>
+    <string name="custom_api_response_key_summary">JSON key to extract reply from response (default: response)</string>
+    <string name="default_custom_api_url">http://localhost:8000/generate/</string>
+    <string name="default_response_key">response</string>
+    <string name="custom_api_request_format_title">Request Format</string>
+    <string name="custom_api_request_format_summary">Choose JSON or Form Data format</string>
+    <string name="natural_delay_title">Natural Reply Delay</string>
+    <string name="natural_delay_summary_on">Replies will have delay based on message length</string>
+    <string name="natural_delay_summary_off">Replies will be sent instantly</string>
+    <string name="custom_prompt_title">Custom AI Behavior Prompt</string>
+    <string name="custom_prompt_summary">Define how the AI should behave. Use placeholders: {language}, {botName}, {sender}, {message}, {chatHistory}</string>
+    <string name="default_custom_prompt">You are a WhatsApp auto-reply bot named {botName}. Your task is to read the provided previous chat history and reply to the most recent incoming message. Always respond in {language}. Be polite, context-aware, and ensure your replies are relevant to the conversation.\n\nPrevious chat history:\n{chatHistory}\n\nMost recent message (from {sender}): {message}</string>
 </resources>

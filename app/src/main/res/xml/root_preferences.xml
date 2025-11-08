@@ -39,6 +39,14 @@
             inputType="number"
             app:useSimpleSummaryProvider="true" />
 
+        <SwitchPreferenceCompat
+            app:dependency="is_bot_enabled"
+            app:key="is_natural_delay_enabled"
+            app:defaultValue="true"
+            app:summaryOff="@string/natural_delay_summary_off"
+            app:summaryOn="@string/natural_delay_summary_on"
+            app:title="@string/natural_delay_title" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/ai_reply_header">
@@ -80,6 +88,40 @@
             app:key="bot_name"
             app:title="@string/bot_name_title"
             app:defaultValue="Yuji"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:dependency="is_ai_reply_enabled"
+            app:key="custom_ai_prompt"
+            app:title="@string/custom_prompt_title"
+            app:summary="@string/custom_prompt_summary"
+            app:defaultValue="@string/default_custom_prompt"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:dependency="is_ai_reply_enabled"
+            app:key="custom_api_url"
+            app:title="@string/custom_api_url_title"
+            app:summary="@string/custom_api_url_summary"
+            app:defaultValue="@string/default_custom_api_url"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:dependency="is_ai_reply_enabled"
+            app:key="custom_api_response_key"
+            app:title="@string/custom_api_response_key_title"
+            app:summary="@string/custom_api_response_key_summary"
+            app:defaultValue="@string/default_response_key"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:dependency="is_ai_reply_enabled"
+            app:key="custom_api_request_format"
+            app:title="@string/custom_api_request_format_title"
+            app:summary="@string/custom_api_request_format_summary"
+            app:entries="@array/request_format_entries"
+            app:entryValues="@array/request_format_values"
+            app:defaultValue="form"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>

@@ -24,6 +24,7 @@ import java.util.Set;
 import zo.ro.whatsappreplybot.R;
 import zo.ro.whatsappreplybot.apis.ChatGPTReplyGenerator;
 import zo.ro.whatsappreplybot.apis.CustomReplyGenerator;
+import zo.ro.whatsappreplybot.apis.DeepSeekReplyGenerator;
 import zo.ro.whatsappreplybot.apis.GeminiReplyGenerator;
 import zo.ro.whatsappreplybot.helpers.WhatsAppMessageHandler;
 
@@ -118,7 +119,7 @@ public class MyNotificationListenerService extends NotificationListenerService {
                                 botReplyMessage = replyPrefix + " " + reply;
                                 String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
                                 messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);
-                                send(action, botReplyMessage);
+                                sendWithNaturalDelay(action, botReplyMessage);
                                 new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 750);
                             });
 
@@ -130,7 +131,7 @@ public class MyNotificationListenerService extends NotificationListenerService {
                                 botReplyMessage = replyPrefix + " " + reply;
                                 String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
                                 messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);
-                                send(action, botReplyMessage);
+                                sendWithNaturalDelay(action, botReplyMessage);
                                 new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 750);
                             });
 
@@ -142,7 +143,19 @@ public class MyNotificationListenerService extends NotificationListenerService {
                                 botReplyMessage = replyPrefix + " " + reply;
                                 String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
                                 messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);
-                                send(action, botReplyMessage);
+                                sendWithNaturalDelay(action, botReplyMessage);
+                                new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 750);
+                            });
+
+                        } else if (llmModel.startsWith("deepseek")) {
+
+                            DeepSeekReplyGenerator deepSeekReplyGenerator = new DeepSeekReplyGenerator(this, sharedPreferences, messageHandler);
+
+                            deepSeekReplyGenerator.generateReply(sender, message, reply -> {
+                                botReplyMessage = replyPrefix + " " + reply;
+                                String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
+                                messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);
+                                sendWithNaturalDelay(action, botReplyMessage);
                                 new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 750);
                             });
                         }
@@ -151,7 +164,7 @@ public class MyNotificationListenerService extends NotificationListenerService {
                         botReplyMessage = (replyPrefix + " " + sharedPreferences.getString("default_reply_message", getString(R.string.default_bot_message))).trim();
                         String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
                         messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);
-                        send(action, botReplyMessage);
+                        sendWithNaturalDelay(action, botReplyMessage);
                         new Handler().postDelayed(() -> respondedMessages.remove(messageId), 750);
                     }
 
@@ -161,6 +174,40 @@ public class MyNotificationListenerService extends NotificationListenerService {
                 }
             }
         }
+    }
+
+//    ----------------------------------------------------------------------------------------------
+
+    /**
+     * Calculates delay in milliseconds based on reply text length to make it feel more natural
+     * Short messages (1-20 chars): 1-2 seconds
+     * Medium messages (21-100 chars): 2-4 seconds
+     * Long messages (100+ chars): 4-8 seconds
+     */
+    private long calculateNaturalDelay(String replyText) {
+        if (replyText == null || replyText.isEmpty()) {
+            return 1000; // Default 1 second for empty messages
+        }
+
+        int length = replyText.length();
+        long delay;
+
+        if (length <= 20) {
+            // Short messages: 1-2 seconds (base 1000ms + up to 1000ms)
+            delay = 1000 + (length * 50); // 1s + 50ms per character
+        } else if (length <= 100) {
+            // Medium messages: 2-4 seconds
+            delay = 2000 + ((length - 20) * 25); // 2s base + 25ms per extra character
+        } else {
+            // Long messages: 4-8 seconds (capped at 8 seconds)
+            delay = 4000 + ((length - 100) * 40); // 4s base + 40ms per extra character
+            if (delay > 8000) {
+                delay = 8000; // Cap at 8 seconds
+            }
+        }
+
+        // Ensure minimum delay of 1 second
+        return Math.max(delay, 1000);
     }
 
 //    ----------------------------------------------------------------------------------------------
@@ -180,6 +227,25 @@ public class MyNotificationListenerService extends NotificationListenerService {
             action.actionIntent.send(this, 0, intent);
         } catch (PendingIntent.CanceledException e) {
             Log.e(TAG, "sendAutoReply: ", e);
+        }
+    }
+
+//    ----------------------------------------------------------------------------------------------
+
+    /**
+     * Sends reply with natural delay based on text length (if enabled)
+     */
+    private void sendWithNaturalDelay(Notification.Action action, String botReplyMessage) {
+        boolean isNaturalDelayEnabled = sharedPreferences.getBoolean("is_natural_delay_enabled", true);
+        
+        if (isNaturalDelayEnabled) {
+            long delay = calculateNaturalDelay(botReplyMessage);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                send(action, botReplyMessage);
+            }, delay);
+        } else {
+            // Send instantly if natural delay is disabled
+            send(action, botReplyMessage);
         }
     }
 
