@@ -71,16 +71,27 @@ public class DeepSeekReplyGenerator {
                 try {
                     // Use custom prompt if provided, otherwise use default
                     if (!customPrompt.isEmpty()) {
-                        // Process custom prompt template
-                        String processedPrompt = CustomMethods.processPromptTemplate(
-                            customPrompt, aiReplyLanguage, botName, sender, message, chatHistory.toString()
-                        );
+                        // Use custom prompt as system message (no placeholders needed)
+                        String processedPrompt = customPrompt;
                         
-                        // For custom prompt, use it as system message and combine everything
+                        // Use custom prompt as system message
                         systemRole.put("role", "system");
                         systemRole.put("content", processedPrompt);
                         
+                        // Automatically add chat history and message as user messages
+                        userRole1.put("role", "user");
+                        if (chatHistory.toString().isEmpty()) {
+                            userRole1.put("content", "There is no previous chat history. This is the first message from the sender.");
+                        } else {
+                            userRole1.put("content", "Previous chat history:\n" + chatHistory);
+                        }
+                        
+                        userRole2.put("role", "user");
+                        userRole2.put("content", "Most recent message (from " + sender + "): " + message);
+                        
                         httpRequestMessages.put(systemRole);
+                        httpRequestMessages.put(userRole1);
+                        httpRequestMessages.put(userRole2);
                     } else {
                         // Default behavior
                         systemRole.put("role", "system");

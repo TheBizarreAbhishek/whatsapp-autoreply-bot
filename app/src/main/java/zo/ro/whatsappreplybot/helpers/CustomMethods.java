@@ -20,8 +20,8 @@ public class CustomMethods {
 //    ----------------------------------------------------------------------------------------------
 
     /**
-     * Processes a prompt template by replacing placeholders with actual values
-     * Supported placeholders: {language}, {botName}, {sender}, {message}, {chatHistory}
+     * Processes a prompt template by automatically appending chat history and message
+     * No placeholders needed - users just write the behavior prompt
      */
     public static String processPromptTemplate(String template, String language, String botName, 
                                                 String sender, String message, String chatHistory) {
@@ -29,19 +29,22 @@ public class CustomMethods {
             return template;
         }
 
-        String processed = template;
+        // Automatically append chat history and message at the end
+        StringBuilder finalPrompt = new StringBuilder(template);
         
-        // Replace placeholders
-        processed = processed.replace("{language}", language != null ? language : "English");
-        processed = processed.replace("{botName}", botName != null ? botName : "Bot");
-        processed = processed.replace("{sender}", sender != null ? sender : "");
-        processed = processed.replace("{message}", message != null ? message : "");
-        processed = processed.replace("{chatHistory}", chatHistory != null ? chatHistory : "");
+        // Add chat history if available
+        if (chatHistory != null && !chatHistory.trim().isEmpty()) {
+            finalPrompt.append("\n\nPrevious chat history:\n").append(chatHistory);
+        } else {
+            finalPrompt.append("\n\nThere is no previous chat history. This is the first message from the sender.");
+        }
         
-        // Replace \n with actual newlines
-        processed = processed.replace("\\n", "\n");
+        // Add current message
+        if (sender != null && message != null) {
+            finalPrompt.append("\n\nMost recent message (from ").append(sender).append("): ").append(message);
+        }
         
-        return processed;
+        return finalPrompt.toString();
     }
 
 //    ----------------------------------------------------------------------------------------------

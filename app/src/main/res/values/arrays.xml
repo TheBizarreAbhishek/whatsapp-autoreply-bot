@@ -43,6 +43,7 @@
     <string-array name="languages">
         <item>English</item>
         <item>Hindi</item>
+        <item>Hinglish</item>
         <item>Bengali</item>
         <item>Chinese</item>
         <item>Japanese</item>

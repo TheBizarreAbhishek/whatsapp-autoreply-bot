@@ -7,8 +7,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.EditTextPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -56,12 +58,11 @@ public class BotSettingsActivity extends AppCompatActivity {
 
 //        ------------------------------------------------------------------------------------------
 
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(R.string.bot_settings);
-        }
+        View included_toolbar = findViewById(R.id.toolbar_include);
+        MaterialToolbar toolbar = included_toolbar.findViewById(R.id.toolbar);
+        toolbar.setTitleCentered(false);
+        toolbar.setTitle("Bot Settings");
+        toolbar.setNavigationIcon(AppCompatResources.getDrawable(this, R.drawable.arrow_back_24));
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
@@ -84,6 +85,20 @@ public class BotSettingsActivity extends AppCompatActivity {
                 customDelayPreference.setOnBindEditTextListener(editText -> {
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     editText.setFilters(new InputFilter[]{new InputFilterMinMax(0, 300)}); // 0 to 300 seconds (5 minutes max)
+                });
+            }
+
+            // Configure custom prompt to allow multi-line input
+            EditTextPreference customPromptPreference = findPreference("custom_ai_prompt");
+            if (customPromptPreference != null) {
+                customPromptPreference.setOnBindEditTextListener(editText -> {
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                    editText.setSingleLine(false);
+                    editText.setLines(5);
+                    editText.setMinLines(3);
+                    editText.setMaxLines(10);
+                    editText.setVerticalScrollBarEnabled(true);
+                    editText.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
                 });
             }
         }
