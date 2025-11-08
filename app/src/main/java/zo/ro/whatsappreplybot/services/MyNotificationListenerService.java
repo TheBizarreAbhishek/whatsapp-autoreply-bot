@@ -274,21 +274,46 @@ public class MyNotificationListenerService extends NotificationListenerService {
 //    ----------------------------------------------------------------------------------------------
 
     /**
-     * Sends reply with natural delay based on text length (if enabled)
+     * Sends reply with delay (custom delay takes priority, then natural delay, then instant)
      * Removes messageId from respondedMessages after sending to prevent duplicates
      */
     private void sendWithNaturalDelay(Notification.Action action, String botReplyMessage, String messageId) {
-        boolean isNaturalDelayEnabled = sharedPreferences.getBoolean("is_natural_delay_enabled", true);
+        long delay = 0;
+        boolean customDelaySet = false;
         
-        if (isNaturalDelayEnabled) {
-            long delay = calculateNaturalDelay(botReplyMessage);
+        // Check for custom delay first (takes priority)
+        String customDelayStr = sharedPreferences.getString("custom_delay_seconds", "").trim();
+        if (!customDelayStr.isEmpty()) {
+            try {
+                double customDelaySeconds = Double.parseDouble(customDelayStr);
+                customDelaySet = true; // Custom delay field is set (even if 0)
+                if (customDelaySeconds > 0) {
+                    delay = (long) (customDelaySeconds * 1000); // Convert seconds to milliseconds
+                }
+                // If custom delay is 0, delay stays 0 and we won't check natural delay
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "Invalid custom delay value: " + customDelayStr, e);
+            }
+        }
+        
+        // If custom delay is NOT set (empty), check for natural delay
+        // If custom delay is set to 0, we skip natural delay (user wants instant)
+        if (!customDelaySet) {
+            boolean isNaturalDelayEnabled = sharedPreferences.getBoolean("is_natural_delay_enabled", true);
+            if (isNaturalDelayEnabled) {
+                delay = calculateNaturalDelay(botReplyMessage);
+            }
+        }
+        
+        // Send with calculated delay (or instantly if delay is 0)
+        if (delay > 0) {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 send(action, botReplyMessage);
                 // Remove messageId after sending (wait additional 2 seconds to prevent duplicates from notification updates)
                 new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 2000);
             }, delay);
         } else {
-            // Send instantly if natural delay is disabled
+            // Send instantly if no delay
             send(action, botReplyMessage);
             // Remove messageId after a short delay to prevent immediate duplicates
             new Handler(Looper.getMainLooper()).postDelayed(() -> respondedMessages.remove(messageId), 2000);

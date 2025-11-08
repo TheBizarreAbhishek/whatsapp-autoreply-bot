@@ -7,10 +7,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.EditTextPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -58,11 +56,12 @@ public class BotSettingsActivity extends AppCompatActivity {
 
 //        ------------------------------------------------------------------------------------------
 
-        View included_toolbar = findViewById(R.id.toolbar_include);
-        MaterialToolbar toolbar = included_toolbar.findViewById(R.id.toolbar);
-        toolbar.setTitleCentered(false);
-        toolbar.setTitle("Bot Settings");
-        toolbar.setNavigationIcon(AppCompatResources.getDrawable(this, R.drawable.arrow_back_24));
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(R.string.bot_settings);
+        }
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
@@ -76,6 +75,15 @@ public class BotSettingsActivity extends AppCompatActivity {
                 editTextPreference.setOnBindEditTextListener(editText -> {
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     editText.setFilters(new InputFilter[]{new InputFilterMinMax(1, 999999999)});
+                });
+            }
+
+            // Add validation for custom delay
+            EditTextPreference customDelayPreference = findPreference("custom_delay_seconds");
+            if (customDelayPreference != null) {
+                customDelayPreference.setOnBindEditTextListener(editText -> {
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    editText.setFilters(new InputFilter[]{new InputFilterMinMax(0, 300)}); // 0 to 300 seconds (5 minutes max)
                 });
             }
         }

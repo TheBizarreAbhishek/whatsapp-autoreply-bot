@@ -4,13 +4,13 @@ plugins {
 
 android {
     namespace 'zo.ro.whatsappreplybot'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "zo.ro.whatsappreplybot"
         minSdk 24
         //noinspection OldTargetApi
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 

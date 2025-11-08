@@ -1,13 +1,50 @@
 <resources>
-    <!-- Base application theme. -->
+    <!-- Base application theme with Material 3. -->
     <style name="Base.Theme.WhatsAppReplyBot" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <item name="colorPrimary">@color/teal_lighter</item>
-        <item name="colorAccent">@color/teal_lighter</item>
-        <item name="android:statusBarColor">@color/teal_lighter</item>
-
-        <!-- Customize text here. -->
-        <item name="textColor">@color/black</item>
+        <!-- Material 3 Color Scheme -->
+        <item name="colorPrimary">@color/material3_primary</item>
+        <item name="colorOnPrimary">@color/material3_on_primary</item>
+        <item name="colorPrimaryContainer">@color/material3_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/material3_on_primary_container</item>
+        
+        <item name="colorSecondary">@color/material3_secondary</item>
+        <item name="colorOnSecondary">@color/material3_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/material3_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/material3_on_secondary_container</item>
+        
+        <item name="colorTertiary">@color/material3_tertiary</item>
+        <item name="colorOnTertiary">@color/material3_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/material3_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/material3_on_tertiary_container</item>
+        
+        <item name="colorError">@color/material3_error</item>
+        <item name="colorOnError">@color/material3_on_error</item>
+        <item name="colorErrorContainer">@color/material3_error_container</item>
+        <item name="colorOnErrorContainer">@color/material3_on_error_container</item>
+        
+        <item name="colorSurface">@color/material3_surface</item>
+        <item name="colorOnSurface">@color/material3_on_surface</item>
+        <item name="colorSurfaceVariant">@color/material3_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/material3_on_surface_variant</item>
+        
+        <item name="colorOutline">@color/material3_outline</item>
+        <item name="colorOutlineVariant">@color/material3_outline_variant</item>
+        
+        <item name="colorSurfaceContainerHighest">@color/material3_surface_container_highest</item>
+        <item name="colorSurfaceContainerHigh">@color/material3_surface_container_high</item>
+        <item name="colorSurfaceContainer">@color/material3_surface_container</item>
+        <item name="colorSurfaceContainerLow">@color/material3_surface_container_low</item>
+        <item name="colorSurfaceContainerLowest">@color/material3_surface_container_lowest</item>
+        
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        
+        <!-- Material 3 shapes -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Material3.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Material3.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Material3.LargeComponent</item>
     </style>
 
     <style name="Theme.WhatsAppReplyBot" parent="Base.Theme.WhatsAppReplyBot" />

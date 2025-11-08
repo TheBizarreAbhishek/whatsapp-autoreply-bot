@@ -47,6 +47,15 @@
             app:summaryOn="@string/natural_delay_summary_on"
             app:title="@string/natural_delay_title" />
 
+        <EditTextPreference
+            app:dependency="is_bot_enabled"
+            app:key="custom_delay_seconds"
+            app:title="@string/custom_delay_title"
+            app:summary="@string/custom_delay_summary"
+            app:defaultValue="@string/default_custom_delay"
+            inputType="numberDecimal"
+            app:useSimpleSummaryProvider="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/ai_reply_header">

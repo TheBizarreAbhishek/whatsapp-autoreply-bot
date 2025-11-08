@@ -1,14 +1,10 @@
 package zo.ro.whatsappreplybot.activities;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.provider.Settings;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.widget.TextViewCompat;
 
 import zo.ro.whatsappreplybot.R;
 import zo.ro.whatsappreplybot.databinding.ActivityMainBinding;
@@ -24,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Set up toolbar
+        setSupportActionBar(binding.toolbar);
 
         if (NotificationHelper.isNotificationServicePermissionGranted(this)) {
             setSettingsButton();
@@ -53,12 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private void setSettingsButton() {
         isSettingsButton = true;
         binding.permissionAndSettingsBtn.setText(R.string.bot_settings);
-        binding.permissionAndSettingsBtn.setAllCaps(true);
-        binding.permissionAndSettingsBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.settings_24, 0, 0, 0);
-        int tintColor = ContextCompat.getColor(this, R.color.white);
-        TextViewCompat.setCompoundDrawableTintList(binding.permissionAndSettingsBtn, ColorStateList.valueOf(tintColor));
-        ColorStateList backgroundTint = ColorStateList.valueOf(getColor(R.color.teal));
-        ViewCompat.setBackgroundTintList(binding.permissionAndSettingsBtn, backgroundTint);
+        binding.permissionAndSettingsBtn.setIconResource(R.drawable.settings_24);
         binding.shortInfoTV.setText(getString(R.string.manage_bot_settings));
     }
 }
