@@ -26,6 +26,7 @@ import zo.ro.whatsappreplybot.apis.ChatGPTReplyGenerator;
 import zo.ro.whatsappreplybot.apis.CustomReplyGenerator;
 import zo.ro.whatsappreplybot.apis.DeepSeekReplyGenerator;
 import zo.ro.whatsappreplybot.apis.GeminiReplyGenerator;
+import zo.ro.whatsappreplybot.apis.OllamaReplyGenerator;
 import zo.ro.whatsappreplybot.helpers.WhatsAppMessageHandler;
 
 public class MyNotificationListenerService extends NotificationListenerService {
@@ -182,6 +183,18 @@ public class MyNotificationListenerService extends NotificationListenerService {
                             DeepSeekReplyGenerator deepSeekReplyGenerator = new DeepSeekReplyGenerator(this, sharedPreferences, messageHandler);
 
                             deepSeekReplyGenerator.generateReply(sender, message, reply -> {
+                                botReplyMessage = replyPrefix + " " + reply;
+                                String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
+                                messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);
+                                sendWithNaturalDelay(action, botReplyMessage, messageId);
+                            });
+
+                        } else if (llmModel.startsWith("llama") || llmModel.startsWith("mistral") || 
+                                   llmModel.startsWith("codellama") || llmModel.startsWith("phi")) {
+
+                            OllamaReplyGenerator ollamaReplyGenerator = new OllamaReplyGenerator(this, sharedPreferences, messageHandler);
+
+                            ollamaReplyGenerator.generateReply(sender, message, reply -> {
                                 botReplyMessage = replyPrefix + " " + reply;
                                 String botReplyWithoutPrefix = botReplyMessage.replace(replyPrefix, "").trim();
                                 messageHandler.handleIncomingMessage(sender, message, botReplyWithoutPrefix);

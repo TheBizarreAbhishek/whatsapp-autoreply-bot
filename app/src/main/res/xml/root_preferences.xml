@@ -92,6 +92,14 @@
 
         <EditTextPreference
             app:dependency="is_ai_reply_enabled"
+            app:key="ollama_api_url"
+            app:title="@string/ollama_api_url_title"
+            app:summary="@string/ollama_api_url_summary"
+            app:defaultValue="@string/default_ollama_url"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:dependency="is_ai_reply_enabled"
             app:key="custom_ai_prompt"
             app:title="@string/custom_prompt_title"
             app:summary="@string/custom_prompt_summary"

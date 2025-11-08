@@ -10,6 +10,11 @@
         <item>DeepSeek Chat</item>
         <item>DeepSeek Coder</item>
         <item>DeepSeek Chat V2</item>
+        <item>Ollama Llama 2</item>
+        <item>Ollama Llama 3</item>
+        <item>Ollama Mistral</item>
+        <item>Ollama CodeLlama</item>
+        <item>Ollama Phi</item>
         <item>Custom API</item>
     </string-array>
 
@@ -23,6 +28,11 @@
         <item>deepseek-chat</item>
         <item>deepseek-coder</item>
         <item>deepseek-chat-v2</item>
+        <item>llama2</item>
+        <item>llama3</item>
+        <item>mistral</item>
+        <item>codellama</item>
+        <item>phi</item>
         <item>custom-gpt-4o</item>
     </string-array>
 
