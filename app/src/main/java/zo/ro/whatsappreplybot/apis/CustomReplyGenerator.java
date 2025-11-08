@@ -90,16 +90,16 @@ public class CustomReplyGenerator {
                     Log.e(TAG, "Error creating JSON request body: ", e);
                     // Fallback to form data if JSON creation fails
                     requestBody = new FormBody.Builder()
-                            .add("prompt", prompt.toString())
-                            .add("model", LLM_MODEL)
-                            .build();
+                    .add("prompt", prompt.toString())
+                    .add("model", LLM_MODEL)
+                    .build();
                 }
             } else {
                 // Default to form data
                 requestBody = new FormBody.Builder()
                         .add("prompt", prompt.toString())
                         .add("model", LLM_MODEL)
-                        .build();
+                    .build();
             }
 
             // Add Authorization header if API key is provided
@@ -234,7 +234,7 @@ public class CustomReplyGenerator {
                         String reply = jsonObject.getString(commonKey);
                         if (!reply.isEmpty()) {
                             Log.d(TAG, "parseResponse: Using fallback key: " + commonKey);
-                            return reply;
+                return reply;
                         }
                     }
                 }

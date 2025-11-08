@@ -83,27 +83,27 @@ public class ChatGPTReplyGenerator {
                         httpRequestMessages.put(systemRole);
                     } else {
                         // Default behavior
-                        systemRole.put("role", "system");
-                        systemRole.put(
-                                "content", "You are a WhatsApp auto-reply bot. " +
-                                        "Your task is to read the provided previous chat history and reply to the most recent incoming message. " +
-                                        "Always respond in " + aiReplyLanguage + ". Be polite, context-aware, and ensure your replies are relevant to the conversation."
-                        );
+                    systemRole.put("role", "system");
+                    systemRole.put(
+                            "content", "You are a WhatsApp auto-reply bot. " +
+                                    "Your task is to read the provided previous chat history and reply to the most recent incoming message. " +
+                                    "Always respond in " + aiReplyLanguage + ". Be polite, context-aware, and ensure your replies are relevant to the conversation."
+                    );
 
-                        userRole1.put("role", "user");
+                    userRole1.put("role", "user");
 
-                        if (chatHistory.toString().isEmpty()) {
-                            userRole1.put("content", "There are no any previous chat history. This is the first message from the sender.");
-                        } else {
-                            userRole1.put("content", "Previous chat history: " + chatHistory);
-                        }
+                    if (chatHistory.toString().isEmpty()) {
+                        userRole1.put("content", "There are no any previous chat history. This is the first message from the sender.");
+                    } else {
+                        userRole1.put("content", "Previous chat history: " + chatHistory);
+                    }
 
-                        userRole2.put("role", "user");
-                        userRole2.put("content", "Most recent message from the sender (" + sender + "): " + message);
+                    userRole2.put("role", "user");
+                    userRole2.put("content", "Most recent message from the sender (" + sender + "): " + message);
 
-                        httpRequestMessages.put(systemRole);
-                        httpRequestMessages.put(userRole1);
-                        httpRequestMessages.put(userRole2);
+                    httpRequestMessages.put(systemRole);
+                    httpRequestMessages.put(userRole1);
+                    httpRequestMessages.put(userRole2);
                     }
 
                     container.put("model", LLM_MODEL);
