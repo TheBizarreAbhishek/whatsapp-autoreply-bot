@@ -5,8 +5,10 @@
         <item>GPT 4</item>
         <item>GPT 4o</item>
         <item>GPT 4o Mini</item>
-        <item>Gemini 1.5 Flash</item>
-        <item>Gemini 1.5 Pro</item>
+        <item>Gemini 2.0 Flash</item>
+        <item>Gemini 2.0 Flash Thinking</item>
+        <item>Gemini 2.5 Flash</item>
+        <item>Gemini 2.5 Pro</item>
         <item>DeepSeek Chat</item>
         <item>DeepSeek Coder</item>
         <item>DeepSeek Chat V2</item>
@@ -23,8 +25,10 @@
         <item>gpt-4</item>
         <item>gpt-4o</item>
         <item>gpt-4o-mini</item>
-        <item>gemini-1.5-flash</item>
-        <item>gemini-1.5-pro</item>
+        <item>gemini-2.0-flash-exp</item>
+        <item>gemini-2.0-flash-thinking-exp</item>
+        <item>gemini-2.5-flash</item>
+        <item>gemini-2.5-pro</item>
         <item>deepseek-chat</item>
         <item>deepseek-coder</item>
         <item>deepseek-chat-v2</item>

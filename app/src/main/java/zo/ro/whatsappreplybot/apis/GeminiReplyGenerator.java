@@ -39,7 +39,7 @@ public class GeminiReplyGenerator {
         this.context = context;
         this.messageHandler = whatsAppMessageHandler;
         API_KEY = sharedPreferences.getString("api_key", "not-set").trim();
-        LLM_MODEL = sharedPreferences.getString("llm_model", "gemini-1.5-flash");
+        LLM_MODEL = sharedPreferences.getString("llm_model", "gemini-2.0-flash-exp");
         defaultReplyMessage = sharedPreferences.getString("default_reply_message", context.getString(R.string.default_bot_message));
         aiReplyLanguage = sharedPreferences.getString("ai_reply_language", "English");
         botName = sharedPreferences.getString("bot_name", "Yuji");
